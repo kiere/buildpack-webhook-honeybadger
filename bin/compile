@@ -23,5 +23,5 @@ function export_env_vars() {
 }
 
 export_env_vars
-echo "-----> Running curl $BUILDPACK_WEBHOOK_URL"
-curl --globoff "$BUILDPACK_WEBHOOK_URL"
+echo "-----> Setting AppSignal Deploy Marker at revision $SOURCE_VERSION for $APPSIGNAL_APP_NAME ($APPSIGNAL_APP_ENV)"
+curl -X POST -d "{\"revision\":\"$SOURCE_VERSION\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY&name=$APPSIGNAL_APP_NAME&environment=$APPSIGNAL_APP_ENV"
