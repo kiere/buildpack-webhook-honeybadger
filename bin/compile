@@ -9,6 +9,23 @@ build_path=$(cd $1 && pwd)
 cache_path=$(cd $2 && pwd)
 env_path=$(cd $3 && pwd)
 
+function urlencode() {
+   # urlencode <string>
+   old_lc_collate=$LC_COLLATE
+   LC_COLLATE=C
+
+   local length="${#1}"
+   for (( i = 0; i < length; i++ )); do
+       local c="${1:i:1}"
+       case $c in
+           [a-zA-Z0-9.~_-]) printf "$c" ;;
+           *) printf '%%%02X' "'$c" ;;
+       esac
+   done
+
+   LC_COLLATE=$old_lc_collate
+}
+
 function export_env_vars() {
   whitelist_regex=${2:-''}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
@@ -23,5 +40,9 @@ function export_env_vars() {
 }
 
 export_env_vars
+
+app_name_encoded=$(urlencode "$APPSIGNAL_APP_NAME")
+app_env_encoded=$(urlencode "$APPSIGNAL_APP_ENV")
+
 echo "-----> Setting AppSignal Deploy Marker at revision $(git rev-parse HEAD) for $APPSIGNAL_APP_NAME ($APPSIGNAL_APP_ENV)"
-curl -G -X POST -d "{\"revision\":\"$(git rev-parse HEAD)\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" --data-urlencode "name=$APPSIGNAL_APP_NAME" --data-urlencode "environment=$APPSIGNAL_APP_ENV" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY"
+curl -v -X POST -d "{\"revision\":\"$(git rev-parse HEAD)\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY&name=$app_name_encoded&environment=$app_env_encoded"
