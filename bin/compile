@@ -44,5 +44,5 @@ export_env_vars
 app_name_encoded=$(urlencode "$APPSIGNAL_APP_NAME")
 app_env_encoded=$(urlencode "$APPSIGNAL_APP_ENV")
 
-echo "-----> Setting AppSignal Deploy Marker at revision $(git rev-parse HEAD) for $APPSIGNAL_APP_NAME ($APPSIGNAL_APP_ENV)"
-curl -X POST -d "{\"revision\":\"$(git rev-parse HEAD)\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY&name=$app_name_encoded&environment=$app_env_encoded"
+echo "-----> Setting AppSignal Deploy Marker at revision $SOURCE_VERSION for $APPSIGNAL_APP_NAME ($APPSIGNAL_APP_ENV)"
+curl -X POST -d "{\"revision\":\"$SOURCE_VERSION\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY&name=$app_name_encoded&environment=$app_env_encoded"
