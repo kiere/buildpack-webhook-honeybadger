@@ -41,8 +41,8 @@ function export_env_vars() {
 
 export_env_vars
 
-app_name_encoded=$(urlencode "$APPSIGNAL_APP_NAME")
-app_env_encoded=$(urlencode "$APPSIGNAL_APP_ENV")
+app_name_encoded=$(urlencode "$HONEYBADGER_APP_NAME")
+app_env_encoded=$(urlencode "$HONEYBADGER_APP_ENV")
 
-echo "-----> Setting AppSignal Deploy Marker at revision $SOURCE_VERSION for $APPSIGNAL_APP_NAME ($APPSIGNAL_APP_ENV)"
-curl -X POST -d "{\"revision\":\"$SOURCE_VERSION\",\"repository\":\"master\",\"user\":\"Gigalixir\"}" "https://push.appsignal.com/1/markers?api_key=$APPSIGNAL_PUSH_API_KEY&name=$app_name_encoded&environment=$app_env_encoded"
+echo "-----> Setting Deploy Marker at revision $SOURCE_VERSION for $app_name_encoded ($app_env_encoded)"
+curl --globoff "https://api.honeybadger.io/v1/deploys?deploy[environment]=$app_env_encoded&deploy[local_username]=Gigalixir&deploy[repository]=$HONEYBADGER_GIT_REPO&deploy[revision]=$SOURCE_VERSION&api_key=$HONEYBADGER_API_KEY"
